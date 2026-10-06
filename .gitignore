@@ -1,0 +1,53 @@
+# Secrets: only the placeholder file is committed
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+
+# App signing and store credentials: never in git
+*.jks
+*.keystore
+*.p8
+*.mobileprovision
+credentials.json
+*service-account*.json
+
+# Personal Claude Code settings and notes
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Dependencies and build output
+node_modules/
+dist/
+build/
+.next/
+out/
+coverage/
+.turbo/
+
+# Mobile builds and tool caches
+*.apk
+*.aab
+*.ipa
+*.dSYM.zip
+.expo/
+.gradle/
+DerivedData/
+Pods/
+xcuserdata/
+
+# Test and tool output
+playwright-report/
+test-results/
+.maestro/screenshots/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
