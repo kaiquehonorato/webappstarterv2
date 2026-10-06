@@ -28,6 +28,8 @@ It is the sibling of the web app starter kit: the same phases, gates and rules, 
 
 First time? [`docs/GETTING-STARTED.md`](docs/GETTING-STARTED.md) walks through every step, from installing Claude Code and the phone tooling to an approved spec.
 
+Prefer a visual guide? Open [`docs/walkthrough.html`](docs/walkthrough.html) in a browser (download it or clone the repo first; GitHub shows HTML files as source). It covers the same steps with a terminal/browser switch, a kickoff prompt builder and a phase-by-phase map.
+
 ## The phases
 
 | # | Phase | What you get | Model · effort | Prompt |
