@@ -385,7 +385,7 @@ claude --model opus --effort high</pre></div>
         <div class="head">
           <div class="headrow"><span class="label">Step 6</span><label class="check"><input type="checkbox" id="done-phases" data-step="phases"> Done</label></div>
           <h2 id="phases-h">Every phase after that</h2>
-          <p class="muted">Same loop each time: fresh session with that phase's model and effort, paste its prompt, answer and approve, check the evidence, merge. Phases marked <span class="chip pc">your computer</span> need a simulator or phone.</p>
+          <p class="muted">Same loop each time: fresh session with that phase's model and effort, type <code>/phase</code> and its number (or paste its prompt), answer and approve, check the evidence, merge. Phases 3, 4 and 4b run the loop once per step: after each merge, <code>/clear</code>, then <code>/phase</code> again. Phases marked <span class="chip pc">your computer</span> need a simulator or phone.</p>
         </div>
         <ol class="rail" id="rail"></ol>
         <p class="muted">These are starting points. If Claude skips work, raise the effort one step. If it tries hard and is still wrong, switch to Opus. Details in <code>docs/models-and-tokens.md</code>.</p>
@@ -413,13 +413,14 @@ claude --model opus --effort high</pre></div>
           <h2 id="habits-h">Habits that keep quality high and cost low</h2>
         </div>
         <ol class="seq">
-          <li><div><p>One phase or one Issue per session. <span data-path="terminal"><code>/clear</code> between unrelated tasks.</span><span data-path="browser" hidden>Start a new session for each.</span> The plan lives in files, so a fresh session loses nothing.</p></div></li>
+          <li><div><p>One phase, one step (Phases 3, 4 and 4b) or one Issue per session. <span data-path="terminal"><code>/clear</code> between unrelated tasks.</span><span data-path="browser" hidden>Start a new session for each.</span> The plan lives in files, so a fresh session loses nothing.</p></div></li>
           <li><div><p>Corrected Claude twice on the same thing and still wrong? Start fresh with a better prompt.</p></div></li>
           <li><div><p>Don't accept "done" without evidence: a test, a screenshot from each platform, or a command and its output. Ask which checks ran on a real phone.</p></div></li>
           <li><div><p>Never paste passwords, API keys, signing keys or store credentials into the chat. They go in your host's settings, the build service, GitHub secrets, or a local <code>.env</code> you edit yourself.</p></div></li>
           <li><div><p><code>docs/ROADMAP.md</code> always shows where you are and what comes next.</p></div></li>
           <li data-path="terminal"><div><p>Press <kbd>Esc</kbd> to stop Claude mid-task; <kbd>Esc</kbd> twice or <code>/rewind</code> to go back. <code>claude --continue</code> reopens the last session.</p></div></li>
           <li><div><p>Read <code>docs/vibe-coding-mistakes.md</code> once: the 52 common ways AI-built apps fail, and the guardrail for each.</p></div></li>
+          <li><div><p>Questions about the kit: <code>/ask</code> and your question answers from the docs on a small model, in its own context. <code>/btw</code> answers a quick side question without adding it to the conversation.</p></div></li>
         </ol>
       </section>
 
@@ -458,7 +459,8 @@ claude --model opus --effort high</pre></div>
           <table>
             <tbody>
               <tr><td>Phase 0</td><td>One session, 1 to 2 hours of conversation</td></tr>
-              <tr><td>Phases 1 to 4</td><td>One or two sessions each</td></tr>
+              <tr><td>Phases 1 and 2</td><td>One or two sessions each</td></tr>
+              <tr><td>Phases 3, 4 and 4b</td><td>One session per step: 7, 7 and 11 steps</td></tr>
               <tr><td>Each feature</td><td>One session, often 30 to 90 minutes</td></tr>
               <tr><td>Store clocks</td><td>Account checks, the 14-day closed test and each review run alongside</td></tr>
             </tbody>
@@ -504,17 +506,17 @@ claude --model opus --effort high</pre></div>
 
   // Phases
   var PHASES = [
-    { n: "1", name: "Prototype and manual", model: "sonnet", effort: "medium", file: "prompts/01-prototype-manual.md", you: "Share 2–3 screenshots of apps you like, pick one of three visual directions, use the clickable prototype on your phone for a day, read the illustrated manual.", gate: "You pick a direction and approve the manual." },
-    { n: "2", name: "Architecture and stack", model: "opusplan", effort: "high", plan: true, file: "prompts/02-architecture.md", you: "Choose the app framework, backend, hosting, database, sign-in and build service from options with monthly costs. Approve the data model and settle each item the documents disagree on.", gate: "ADRs, data model and threat model approved; GitHub Issues created." },
-    { n: "3", name: "Foundation", model: "sonnet", effort: "medium", pc: true, file: "prompts/03-foundation.md", you: "Approve one PR per step. Choose the app identifiers (they can never change). Enter signing credentials and secrets yourself in the build service or GitHub. Install the first preview build on your phones.", gate: "CI green, first preview build running on both phones." },
-    { n: "4", name: "Design system", model: "sonnet", effort: "medium", pc: true, file: "prompts/04-design-system.md", you: "Check the component catalog in light and dark, at the largest text size, on your own phones. Approve the app icon.", gate: "Components checked on both platforms; icon approved." },
-    { n: "4b", name: "Store pages and public site", model: "sonnet", effort: "medium", file: "prompts/04b-public-site.md", you: "Say if the app is public or staff-only and whether you want a landing page. Try account deletion on a test account, check a link opens the app, check the preview in WhatsApp.", gate: "Privacy, support and account-deletion pages live." },
+    { n: "1", name: "Prototype and manual", model: "sonnet", effort: "medium", extra: "/phase 1", file: "prompts/01-prototype-manual.md", you: "Share 2–3 screenshots of apps you like, pick one of three visual directions, use the clickable prototype on your phone for a day, read the illustrated manual.", gate: "You pick a direction and approve the manual." },
+    { n: "2", name: "Architecture and stack", model: "opusplan", effort: "high", plan: true, extra: "/phase 2", file: "prompts/02-architecture.md", you: "Choose the app framework, backend, hosting, database, sign-in and build service from options with monthly costs. Approve the data model and settle each item the documents disagree on.", gate: "ADRs, data model and threat model approved; GitHub Issues created." },
+    { n: "3", name: "Foundation", model: "sonnet", effort: "medium", pc: true, extra: "/phase 3", file: "prompts/03-foundation.md", you: "Approve one PR per step; after each merge, /clear, then /phase 3. Choose the app identifiers (they can never change). Enter signing credentials and secrets yourself in the build service or GitHub. Install the first preview build on your phones.", gate: "CI green, first preview build running on both phones." },
+    { n: "4", name: "Design system", model: "sonnet", effort: "medium", pc: true, extra: "/phase 4", file: "prompts/04-design-system.md", you: "Approve one PR per step; after each merge, /clear, then /phase 4. Check the component catalog in light and dark, at the largest text size, on your own phones. Approve the app icon.", gate: "Components checked on both platforms; icon approved." },
+    { n: "4b", name: "Store pages and public site", model: "sonnet", effort: "medium", extra: "/phase 4b", file: "prompts/04b-public-site.md", you: "Approve one PR per step; after each merge, /clear (in the browser, a new session), then /phase 4b. Say if the app is public or staff-only and whether you want a landing page. Try account deletion on a test account, check a link opens the app, check the preview in WhatsApp.", gate: "Privacy, support and account-deletion pages live." },
     { n: "5+", name: "Features", model: "sonnet", effort: "medium", extra: "/new-feature <issue number>", file: "prompts/05-feature.md", you: "One Issue per session. Review the screenshots and evidence in the pull request, then merge.", gate: "Tests green, checked on iOS and Android, reviewed." },
-    { n: "6", name: "Security audit", model: "opus", effort: "high", repeat: "every 3–5 features", file: "prompts/06-security-audit.md", you: "Approve the fixes and set the agent budget for the deeper hunt. Also run before launch.", gate: "Findings fixed or accepted with a reason." },
-    { n: "7", name: "Legal and store policy", model: "opus", effort: "high", file: "prompts/07-legal-review.md", you: "Take the report and drafts to a lawyer. Enter the privacy labels, Data safety answers and age ratings in the stores after review.", gate: "Lawyer reviewed; store forms match what the app collects." },
-    { n: "8", name: "Launch", model: "sonnet", effort: "high", pc: true, file: "prompts/08-launch.md", you: "Go through docs/launch-checklist.md, check the release build on your phones, then approve each submission and rollout step.", gate: "Live in the stores with a phased rollout." },
+    { n: "6", name: "Security audit", model: "opus", effort: "high", repeat: "every 3–5 features", extra: "/phase 6", file: "prompts/06-security-audit.md", you: "Approve the fixes and set the agent budget for the deeper hunt. Also run before launch.", gate: "Findings fixed or accepted with a reason." },
+    { n: "7", name: "Legal and store policy", model: "opus", effort: "high", extra: "/phase 7", file: "prompts/07-legal-review.md", you: "Take the report and drafts to a lawyer. Enter the privacy labels, Data safety answers and age ratings in the stores after review.", gate: "Lawyer reviewed; store forms match what the app collects." },
+    { n: "8", name: "Launch", model: "sonnet", effort: "high", pc: true, extra: "/phase 8", file: "prompts/08-launch.md", you: "Go through docs/launch-checklist.md, check the release build on your phones, then approve each submission and rollout step.", gate: "Live in the stores with a phased rollout." },
     { n: "↻", name: "Every release", model: "sonnet", effort: "medium", pc: true, extra: "/store-release <version>", file: ".claude/skills/store-release/SKILL.md", you: "Check the test build on your phones, approve the submission, watch the rollout numbers with Claude.", gate: "You approve each submission." },
-    { n: "9", name: "Cleanup review", model: "opus", effort: "high", repeat: "every 5–10 features", file: "prompts/09-cleanup-review.md", you: "Approve the removal plan, then merge one small PR per step.", gate: "Dead code, unused permissions and SDKs removed." }
+    { n: "9", name: "Cleanup review", model: "opus", effort: "high", repeat: "every 5–10 features", extra: "/phase 9", file: "prompts/09-cleanup-review.md", you: "Approve the removal plan, then merge one small PR per step.", gate: "Dead code, unused permissions and SDKs removed." }
   ];
   function esc(s) { return s.replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
   function renderRail(path) {

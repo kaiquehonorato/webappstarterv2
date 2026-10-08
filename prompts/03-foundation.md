@@ -1,11 +1,11 @@
 # 03 · Foundation: repo, CI, tests, security pipeline, builds
 Model: Sonnet · effort medium · new session on your computer (it needs the iOS simulator and the Android emulator), after the Phase 2 ADRs are merged · raise to high if CI or the builds keep failing on setup details
-Start: `claude --model sonnet --effort medium`
+Start: `claude --model sonnet --effort medium`, then `/phase 3`. After each step: merge its PR, `/clear`, `/phase 3`.
 
 After this phase, every change is checked automatically (by hooks while Claude works, by CI on every pull request, by scheduled scans every week), and a preview build of the app installs on your phone from the pipeline, without signing keys ever passing through Claude.
 
 ```text
-Read AGENTS.md, SPEC.md, docs/architecture.md, the ADRs in docs/adr/, docs/app-stores.md and docs/launch-checklist.md. This is Phase 3: build the foundation so every future change is checked automatically and the app builds from the pipeline. Do the steps in order. Each step is one GitHub Issue, one branch and one PR. After each PR, stop and show me the evidence (commands and their output, and which platforms each check ran on) before starting the next step.
+Read AGENTS.md, SPEC.md, docs/architecture.md, the ADRs in docs/adr/, docs/app-stores.md and docs/launch-checklist.md. This is Phase 3: build the foundation so every future change is checked automatically and the app builds from the pipeline. Do the steps in order, one session per step, starting at the step named under "Current step" in docs/ROADMAP.md (Step 1 if it names no step of this phase). Each step is one GitHub Issue, one branch and one PR. After each PR, stop and show me the evidence (commands and their output, and which platforms each check ran on). In the same PR, rewrite "Current step" with the next step and a handoff of at most three lines, and record any decision under Decisions. Then tell me to merge it, type `/clear` and type `/phase 3`, so the next step starts with a clean context.
 
 Ask before creating accounts or adding anything paid. Never hardcode secrets; add placeholders to .env.example. You never see or handle signing keys, store passwords or store API keys: I enter them in the build service or CI myself, following your exact clicks. Before installing any dependency or SDK, confirm it exists on the official registry under that exact name, is actively maintained and widely used, and has a compatible license (MIT, Apache-2.0, BSD, ISC). List every new dependency in the PR. Tools named below are examples; use the equivalent for our stack.
 
@@ -27,9 +27,11 @@ Step 4. Security pipeline, in layers, so whatever one layer misses the next can 
 - Every week, on a schedule: a DAST baseline scan (OWASP ZAP) against the API and the site on the preview or staging URL, signed in with a test account kept in CI secrets (without one it only scans the sign-in endpoint); a Lighthouse CI run on the site's pages; the end-to-end flows on an iOS simulator if they don't run on every PR; and a full dependency audit. Findings open GitHub Issues.
 - Inside Claude Code: /security-review before any PR that touches auth, data, APIs, uploads, permissions or deep links, and a scan with the claude-security plugin before each release. Optional, in the terminal: the security-guidance plugin (docs/skills-and-plugins.md says what it costs).
 
-Step 5. Claude Code hooks for this repo, in .claude/settings.json, merged with the existing deny and ask rules:
+Step 5. Claude Code setup for this repo: hooks in .claude/settings.json, merged with the existing settings, plus quiet commands and code intelligence:
 - Format files after each edit.
 - A Stop hook script in .claude/hooks/ that runs the fast checks (typecheck, lint, unit tests of the changed package) and sends only the failures back to Claude. So it can't loop or slow down every reply: it exits at once when its input has "stop_hook_active": true (Claude is already fixing an earlier failure) or when `git status` shows no changed source files; its timeout is about 2 minutes; on failure it prints at most the last 40 lines to stderr and exits with code 2, which makes Claude fix them before it stops. Builds and device flows stay out of it: they are too slow for every reply.
+- Quiet commands, because every line of output stays in Claude's context for the rest of the session: a `pnpm check` script that runs the same fast checks as the Stop hook, test runners on a reporter that prints only failures, Gradle with `--quiet`, and Xcode output through xcbeautify (MIT) unless the framework's CLI already shortens it. A passing run prints one summary line; a failing run prints only the failures. Add `pnpm check` to Commands in AGENTS.md.
+- Code intelligence: once its language server passes the dependency checks above, enable Anthropic's official code-intelligence plugin for our language from the `claude-plugins-official` marketplace in .claude/settings.json (e.g. `typescript-lsp`, plus `swift-lsp` or `kotlin-lsp` if we write native modules), and list it in docs/skills-and-plugins.md. It answers "where is this defined, and what calls it" without reading whole files. It works in the terminal; browser sessions don't install plugins.
 Then run /run-skill-generator, or ask me to type it if you can't start it yourself, so /run and /verify know how to start the API and the app on a simulator.
 
 Step 6. Builds, deploys and observability.
@@ -43,7 +45,7 @@ Step 7. Docs. A README with setup in five commands or fewer for the API and one 
 
 Not now: the scale tools in the "Later" list of docs/ROADMAP.md (staging, tracing, mutation tests, load tests, a device farm, CODEOWNERS). Keep that list current, with the event that brings each one in.
 
-Final output: a checklist of every item above marked done, or skipped with the reason; the evidence for each, with the platforms it ran on; and what I must do by hand: accounts, signing credentials, secrets, testers for the closed test, two-step sign-in on every account the project uses, and anything you added to docs/launch-checklist.md.
+Final output, at the end of Step 7: a checklist of every item above marked done, or skipped with the reason; a link to the PR with the evidence for each, and the platforms it ran on; and what I must do by hand: accounts, signing credentials, secrets, testers for the closed test, two-step sign-in on every account the project uses, and anything you added to docs/launch-checklist.md.
 ```
 
 **Why it is lighter than it could be:** a solo project needs the safety net on day one (tests, scans, hooks, CI, builds from the pipeline) but not the scale tools. The "Later" list in docs/ROADMAP.md keeps them from being forgotten without paying for them early (mistake #5). iOS builds and iOS simulator runs cost the most in CI minutes, so they run before releases and weekly instead of on every PR, unless the budget allows more.

@@ -125,10 +125,12 @@ While you answer:
 Each phase runs the same loop:
 
 1. Start a fresh session with that phase's model and effort (table below).
-2. Paste the phase's prompt from `prompts/`.
+2. Type `/phase <n>`, for example `/phase 1`. It reads the phase's prompt from `prompts/`, so you don't have to paste it (pasting still works).
 3. Answer Claude's questions and approve its decisions.
 4. Claude does the work and shows evidence: tests, screenshots from both platforms, command output.
 5. At the gate, check the evidence, approve, and merge the pull request.
+
+Phases 3, 4 and 4b run this loop once per step. After you merge a step's pull request, type `/clear` (in the browser, start a new session), then `/phase <n>` again. Claude leaves a short handoff in `docs/ROADMAP.md`, so the next step starts with a clean context. A short session per step costs less than one long session, and Claude follows the rules better with less in its context.
 
 | Phase | Start the session with | Prompt | What you do |
 |---|---|---|---|
@@ -152,7 +154,7 @@ Phases 1 and 4 use the `frontend-design` skill, which ships in `.claude/skills/`
 
 ## Habits that keep quality high and cost low
 
-1. One phase or one Issue per session. In the terminal, `/clear` between unrelated tasks; in the browser, start a new session. The plan lives in files (`SPEC.md`, `docs/ROADMAP.md`, the ADRs), so a fresh session loses nothing.
+1. One phase, one step (Phases 3, 4 and 4b) or one Issue per session. In the terminal, `/clear` between unrelated tasks; in the browser, start a new session. The plan lives in files (`SPEC.md`, `docs/ROADMAP.md`, the ADRs), so a fresh session loses nothing.
 2. If you correct Claude twice on the same problem and it's still wrong, stop. Start a fresh session and say what went wrong and what you want instead.
 3. Don't accept "done" without evidence: a test, a screenshot from each platform, or a command and its output. Ask which checks ran on a real phone.
 4. Never paste passwords, API keys, signing keys or store credentials into the chat. They go in your hosting provider's settings, in the build service, in GitHub secrets, or in a local `.env` file you edit yourself.
@@ -160,6 +162,7 @@ Phases 1 and 4 use the `frontend-design` skill, which ships in `.claude/skills/`
 6. In the terminal, press Esc to stop Claude mid-task. Press Esc twice, or type `/rewind`, to go back to an earlier point.
 7. To pick up later, run `claude --continue` to reopen the last session in the folder, or `claude --resume` to choose one. In the browser, reopen the session from the sidebar. After a break of more than about an hour, a fresh session costs less and works just as well.
 8. Read `docs/vibe-coding-mistakes.md` once. It lists the 52 most common ways AI-built projects and store apps fail, and the guardrail this kit uses against each.
+9. Questions about the kit: `/ask <question>` answers from the docs on a small model in its own context, so only the answer enters the conversation. `/btw` answers a quick side question without adding it to the conversation.
 
 ## When something goes wrong
 
@@ -173,14 +176,15 @@ Phases 1 and 4 use the `frontend-design` skill, which ships in `.claude/skills/`
 | The app works on the simulator but not on your phone | Ask Claude to reproduce it on the phone first (systematic-debugging). Release builds, slow phones and real networks behave differently |
 | A store rejected the submission | Paste the rejection text into a fresh session on Opus and ask for the guideline it cites, the smallest fix and the reply to the reviewer |
 | The same mistake keeps coming back | Start a fresh session with a better prompt (habit 2) |
-| The session gets slow or loses track | Type `/compact` and what to keep, or start a fresh session |
+| The session gets slow or loses track | Type `/context` to see what fills it, then `/compact` and what to keep, or start a fresh session |
 | A decision doesn't make sense to you | Ask "Explain this as if I'm new to it" or "Show me the ADR for this" |
 
 ## How long it takes
 
 These are rough figures. Your scope decides the total, and Claude estimates the effort of each scope option in Phase 0.
 - Phase 0: one session, 1 to 2 hours of conversation.
-- Phases 1 to 4: one or two sessions each.
+- Phases 1 and 2: one or two sessions each.
+- Phases 3, 4 and 4b: one session per step (7, 7 and 11 steps).
 - Each feature: one session, often 30 to 90 minutes.
 - Store clocks that run in parallel: account verification (days to weeks), Google's 14-day closed test for new personal accounts, and review before each release (a day or two is common).
 

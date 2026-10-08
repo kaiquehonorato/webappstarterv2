@@ -49,7 +49,7 @@ Prefer a visual guide? Open [`docs/walkthrough.html`](docs/walkthrough.html) in 
 
 Each row is a starting point. When Claude skips work, raise the effort; when it tries hard and is still wrong, move to Opus. `docs/models-and-tokens.md` says when to use each level from medium to max.
 
-Why separate sessions: Claude's quality drops as its context fills up. A fresh session per phase with a precise prompt is both better and cheaper; the plan survives in files (`SPEC.md`, `docs/ROADMAP.md`, ADRs), not in chat history.
+Why separate sessions: Claude's quality drops as its context fills up. A fresh session per phase (per step in Phases 3, 4 and 4b) with a precise prompt is both better and cheaper; the plan survives in files (`SPEC.md`, `docs/ROADMAP.md`, ADRs), not in chat history.
 
 Where sessions run: anything that needs an iOS simulator, an Android emulator or a real phone runs on your computer (the terminal, or a Local session in the desktop app) or in CI. A browser session at claude.ai/code runs on a Linux machine in the cloud: it can write code and run the backend and unit tests, but it can't open a simulator, so Claude says which device checks it could not run.
 
@@ -79,11 +79,13 @@ phone-web-app-starter-kit/
 │       ├── new-feature/           ← /new-feature <issue>: Issue → tests → code → review → PR
 │       ├── store-release/         ← /store-release <version>: build, test, submit, roll out
 │       ├── use-case-manual/       ← /use-case-manual: screenshots manual from the prototype or the app
+│       ├── phase/                 ← /phase <n>: starts a phase, or the next step of Phases 3, 4 and 4b
+│       ├── ask/                   ← /ask <question>: answers from the kit's files on Haiku, in its own context
 │       ├── frontend-design/       ← Anthropic's design skill (Apache-2.0)
 │       ├── security-audit/        ← Cloudflare's vulnerability hunt (MIT)
 │       ├── systematic-debugging/  ← from Superpowers (MIT): root cause before any fix
 │       └── verification-before-completion/ ← from Superpowers (MIT): no "done" without proof
-├── prompts/                       ← one per phase, pasted into a fresh session
+├── prompts/                       ← one per phase; start one with /phase <n>, or paste it into a fresh session
 │   └── 00-kickoff.md … 09-cleanup-review.md
 └── docs/
     ├── GETTING-STARTED.md         ← step by step, from installing Claude Code to an approved spec
@@ -104,7 +106,7 @@ phone-web-app-starter-kit/
 
 ## Golden rules
 1. **You decide, Claude proposes.** Platforms, stack, hosting, database, store accounts, money, data and anything legal need your explicit OK. Nothing is submitted to a store or pushed to users without it.
-2. **One session = one phase or one Issue = one PR.** `/clear` between unrelated tasks (in the browser, a new session).
+2. **One session = one phase, one step (Phases 3, 4 and 4b) or one Issue.** `/clear` between unrelated tasks (in the browser, a new session).
 3. **Explore → plan → code → verify.** Skip the plan only if the change fits in one sentence.
 4. **Every claim needs evidence:** a command and its output, a test, or a screenshot from both platforms. Nothing is called "secure" without the test that shows it.
 5. **The app is public.** Anyone can download it, unpack it and call your API without it. Secrets and rules live on the server; the app only asks.
