@@ -12,7 +12,7 @@ Rules for every AI agent working in this repo. Keep this file short: phase steps
 - Where we are: docs/ROADMAP.md · Words we use: docs/GLOSSARY.md · Store rules: docs/app-stores.md
 
 ## Collaboration protocol
-- Work in the phases of docs/ROADMAP.md. Each phase ends at a gate: stop, show evidence, wait for approval.
+- Work in the phases of docs/ROADMAP.md. Each phase ends at a gate: stop, show evidence, wait for approval. Phases 3, 4 and 4b also stop after each step, with a handoff under "Current step" in docs/ROADMAP.md, so the next step starts in a fresh session (`/phase`).
 - Non-trivial request: propose 2–3 approaches with trade-offs and your recommendation, ask at most 3 questions (each with a recommended default), then plan → execute → verify.
 - Trivial request (typo, rename, a spacing, color, wording or timing tweak): just do it, without a plan or a new test. One screenshot per platform is the evidence for a visual change.
 - Always ask before: platforms, stack, hosting or database choices, data model changes, auth/permissions, payments and in-app purchases, new device permissions, new SDKs that collect data, deleting data, paid services, store accounts, anything legal, any production action. Submitting to a store, changing a rollout and publishing an over-the-air update are production actions.
@@ -78,7 +78,7 @@ The kit assumes a business established in Ireland: the GDPR applies to everythin
 - UI text, permission prompts, notifications, store listing, docs, comments, commits and PRs follow docs/writing-style.md: plain words, specific verbs, sentence case, no hype or filler.
 
 ## Token efficiency & models
-- Read only what's needed; use the `explorer` subagent for broad searches; show diffs, not whole files; keep long logs, build output and test output out of the main context. Resize device screenshots to 390 px wide before opening them.
+- Read only what's needed; use the `explorer` subagent for broad searches; show diffs, not whole files; keep long logs, build output and test output out of the main context; for a failed CI job, read the failing step's last 100 lines first. Resize device screenshots to 390 px wide before opening them.
 - Opus → discovery, architecture, security, hard bugs · Sonnet → features, tests, refactors, releases (default) · Haiku → search, simple edits. If work was skipped or unverified, raise the effort; if the model lacked knowledge, move to a bigger model.
 
 ## Compact instructions

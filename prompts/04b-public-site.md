@@ -1,13 +1,13 @@
 # 04b · Store pages and public site: privacy, support, account deletion, app links, landing page
 Model: Sonnet · effort medium · new session, after Phase 4 · raise to Opus · medium if the landing page reads like every other app page
-Start: `claude --model sonnet --effort medium`
+Start: `claude --model sonnet --effort medium`, then `/phase 4b`. After each step: merge its PR, `/clear`, `/phase 4b`.
 
 Every store app needs a few web pages: both stores ask for a privacy policy URL, the App Store asks for a support URL, and Google Play asks for a web page where people can request deleting their account without reinstalling the app. Links that open the app (universal links on iOS, app links on Android) also need two files on a domain you own. This phase builds those, small and solid. A landing page that sells the app is optional, and Step 1 asks whether you want one before anything is built. Run it before the first submission at the latest.
 
 A public page is not another screen of the app. Nobody is signed in, nothing is cached, people arrive from a phone on a slow connection, and a store reviewer will open these links too.
 
 ```text
-Read AGENTS.md, SPEC.md, docs/app-stores.md, docs/writing-style.md, .claude/rules/web.md, the visual-direction ADR from Phase 1 and the tokens in packages/ui. This is Phase 4b: build the store pages and, only if I ask for it, the public site. One Issue, one branch, one PR per step, and stop for my approval at the gate. Use the frontend-design skill with the Phase 1 ADR as its brief: this is the same product, not a new look.
+Read AGENTS.md, SPEC.md, docs/app-stores.md, docs/writing-style.md, .claude/rules/web.md, the visual-direction ADR from Phase 1 and the tokens in packages/ui. This is Phase 4b: build the store pages and, only if I ask for it, the public site. One Issue, one branch, one PR and one session per step, starting at the step named under "Current step" in docs/ROADMAP.md (Step 1 if it names no step of this phase). At the end of each step, rewrite that section in the step's PR (the next step and a handoff of at most three lines; decisions, such as my answers in Step 1, go under Decisions), then tell me to merge it, type `/clear` and type `/phase 4b`. Stop for my approval at the gate. Use the frontend-design skill with the Phase 1 ADR as its brief: this is the same product, not a new look.
 
 Step 1. Decide what gets built. Ask me two questions and wait for the answers before building anything:
 - Who is this for: people who don't know us yet and should find the app, or one company's own staff? Don't infer the answer from the stack, the hosting, the store or the fact that the pages need no sign-in. It decides the indexing in Step 7, and it is my decision rather than a technical detail.

@@ -12,6 +12,11 @@ The rules in this kit come from these sources. When in doubt, the original sourc
 - Manage costs effectively / reduce token usage: https://code.claude.com/docs/en/costs
 - How Claude Code uses prompt caching (what a model switch costs): https://code.claude.com/docs/en/prompt-caching
 - The advisor tool: https://code.claude.com/docs/en/advisor
+- Context window and auto-compaction (`autoCompactWindow`): https://code.claude.com/docs/en/context-window
+- Tool output limits (what Claude sees of a long command's output): https://code.claude.com/docs/en/tools-reference#output-limits
+- Output styles (Concise): https://code.claude.com/docs/en/output-styles
+- Code intelligence plugins (`typescript-lsp` and others): https://code.claude.com/docs/en/plugins/code-intelligence
+- Pricing (input, output and cache rates): https://platform.claude.com/docs/en/about-claude/pricing
 - Memory, AGENTS.md and path-scoped rules: https://code.claude.com/docs/en/memory
 - Skills (bundled `/verify`, `/run`, frontmatter reference): https://code.claude.com/docs/en/skills
 - Commands (`/design`, `/code-review`, `/security-review`, `/goal`, `/deep-research`…; `/verify` and `/deep-research` run only when you type them): https://code.claude.com/docs/en/commands

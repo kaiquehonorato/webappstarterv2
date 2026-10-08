@@ -9,7 +9,7 @@ Aliases always point to the newest recommended version, so "always use the newes
 |---|---|---|
 | `sonnet` | Sonnet 5.5 | Default for building: features, tests, refactors |
 | `opus` | Opus 5.5 | Discovery, architecture, security reviews, hard bugs |
-| `haiku` | Haiku 4.5 | Search subagents, simple edits |
+| `haiku` | Haiku 5.5 (Haiku 4.5 before Claude Code 2.1.293) | Search subagents, `/ask`, simple edits |
 | `fable` | Fable 5.1 | The hardest and longest autonomous work. On some plans it bills usage credits instead of your plan's limits |
 | `best` | Fable 5.1 where available, otherwise Opus 5.5 | When you want the strongest model without thinking about it |
 | `opusplan` | Opus in plan mode, Sonnet while executing | Planning-heavy sessions such as Phase 2 |
@@ -17,7 +17,7 @@ Aliases always point to the newest recommended version, so "always use the newes
 Use aliases in Claude Code. Pin full model IDs (for example `claude-opus-5-5`) only in your product's own code that calls the Claude API, and upgrade those on purpose after testing.
 
 ## Effort levels
-Effort controls how much Claude does before it checks back with you: how many files it reads, how many tools it runs, how many steps it takes and how much it thinks between them. Thinking is always on for Opus 5.5, Sonnet 5.5 and Fable; effort is the dial. Opus 5.5, Sonnet 5.5 and Fable 5.1 offer all five levels; Opus 4.6 and Sonnet 4.6 have no `xhigh`; Haiku has no effort setting.
+Effort controls how much Claude does before it checks back with you: how many files it reads, how many tools it runs, how many steps it takes and how much it thinks between them. Thinking is always on for Opus 5.5, Sonnet 5.5, Haiku 5.5 and Fable; effort is the dial. Opus 5.5, Sonnet 5.5, Haiku 5.5 and Fable 5.1 offer all five levels; Opus 4.6 and Sonnet 4.6 have no `xhigh`; Haiku 4.5 has no effort setting.
 
 | Level | Use it for |
 |---|---|
@@ -90,27 +90,33 @@ Claude Code caches the conversation so each turn doesn't pay for the whole histo
 - **Effort changes** keep the cache on Opus 5.5, Sonnet 5.5 and Fable 5.1 (with an API key or subscription); on older models they don't.
 - **Long breaks.** The cache lives about 1 hour on a subscription (5 minutes by default on API keys and usage credits). After a longer break, resume from a summary or start fresh with `/clear`.
 
+## Where the tokens go
+In one long session of this kit (65 calls to Opus 5.5, at October 2026 API prices), about 48% of the cost was new content entering the conversation, 26% was Claude's replies and thinking, and 25% was re-reading the conversation on each call. So:
+- Everything that enters the conversation (a file, a command's output, a reply) is paid for when it arrives, then again on every later call while it stays, at a twentieth of the input price on Opus 5.5 and Sonnet 5.5.
+- Replies and thinking cost the most per token: output costs five times as much as input.
+- In a chat, the model and the effort level matter most. In a build session with hundreds of tool calls, what enters the context and how long the session runs matter most.
+
 ## Token-saving checklist, biggest wins first
 1. One task per session. `/clear` between unrelated tasks (`/rename` first, to find it again with `/resume`).
-2. A fresh session per phase. The plan lives in files (SPEC.md, docs/ROADMAP.md, ADRs), not in chat history.
+2. A fresh session per phase, and per step in Phases 3, 4 and 4b: merge the step's PR, `/clear`, then `/phase <n>`. The plan lives in files (SPEC.md, docs/ROADMAP.md, ADRs), not in chat history.
 3. Sonnet by default, Opus or Fable where judgment matters, Haiku for search subagents.
 4. Default effort; raise it only when work was skipped. Never `max` by default.
 5. Specific prompts: point at files with `@`, state the outcome and the check.
 6. Plan mode for multi-file changes. A wrong direction is the most expensive mistake.
 7. Subagents for exploration and noisy output (test runs, build logs, documentation lookups). Native build output (Xcode, Gradle) is long: keep only the errors.
 8. Open screenshots only when needed: about 1,400 tokens for a 1280×800 image and 450 for 390×844. A phone screenshot at full resolution costs three or more times as much as the same one resized to 390 px wide, so resize device screenshots before opening them. Look at the screens you changed, on one platform unless the other differs, not the whole manual.
-9. Hooks that trim output, such as showing only failing tests (Phase 3, Step 5).
+9. Quiet output: the Stop hook returns only failures, and `pnpm check`, the test reporters, Gradle and Xcode print one line on success and only the failures otherwise (Phase 3, Step 5). For a failed CI job, read only the failing step's last 100 lines first.
 10. A short AGENTS.md; area rules in `.claude/rules/` with `paths`; workflows in skills, which load only when used.
 11. CLI tools (`gh`, the cloud CLIs) over MCP servers. Disable servers and plugins you don't use (`/mcp`, `/plugin`); `/skill-doctor` and `/doctor` find the unused ones.
-12. A code intelligence plugin for your language (e.g. typescript-lsp) replaces grep-and-read loops with precise lookups.
-13. `/btw` for side questions: the answer never enters the conversation.
-14. `/compact <what to keep>` when you must continue; `/clear` when you don't.
-15. After two failed corrections, restart with a better prompt instead of a third correction.
+12. A code intelligence plugin for your language (e.g. typescript-lsp) replaces grep-and-read loops with precise lookups. Phase 3, Step 5 enables it.
+13. `/btw` for side questions: the answer never enters the conversation. `/ask <question>` for questions about the kit: Haiku reads the docs in its own context and only the answer comes back. For a session of questions, `/output-style concise` gives the result first and no recaps; building keeps the default style, so the evidence at each gate stays complete.
+14. `/compact <what to keep>` when you must continue; `/clear` when you don't. `.claude/settings.json` sets `autoCompactWindow` to 200,000 tokens, so on a model with a 1M-token window a session compacts at about 200,000 tokens instead of close to 1M. For one session that needs more, start it with `CLAUDE_CODE_AUTO_COMPACT_WINDOW=500000 claude`.
+15. When Claude takes a wrong turn, `/rewind` (Esc Esc) to before it and say what you want instead: a correction on top keeps the wrong attempt in the context. After two failed corrections, restart with a better prompt instead of a third correction.
 16. Agent teams can use about 7 times the tokens of a normal session. Only for truly parallel work.
 17. `/fast` buys speed with money; it doesn't save tokens.
-18. Measure: `/context` (what fills the window), `/usage` (cost and cache hit rate), `/insights`, the session-report plugin, or a status line that shows context use.
+18. Measure: `/context` (what fills the window), `/usage` (cost and cache hit rate), `/insights`, the session-report plugin, or a status line that shows context use and cost (`/statusline` writes one).
 
 ## Cheap and reliable at the same time
 The goal is the lowest cost per correct feature, not per message. The checks in this kit (tests first, the Stop hook, reviewer subagents, CI) are what make the cheaper model safe to use: when Sonnet slips, a check catches it before you do.
 
-Sources: Claude Code docs on model configuration, costs, prompt caching and the advisor tool; Anthropic's blog post "Choosing a Claude model and effort level in Claude Code" (links in docs/REFERENCES.md).
+Sources: Claude Code docs on model configuration, costs, prompt caching, the advisor tool, skills, the context window, output styles and code intelligence; Anthropic's pricing page; Anthropic's blog post "Choosing a Claude model and effort level in Claude Code" (links in docs/REFERENCES.md).
