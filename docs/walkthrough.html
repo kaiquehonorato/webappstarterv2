@@ -291,6 +291,8 @@ cd webappstarterv2</pre></div>
         </div>
         <p data-path="browser" hidden>If the Claude GitHub App only has access to selected repositories, add any new one: GitHub → <strong>Settings → Applications → Installed GitHub Apps → Claude → Configure → Repository access</strong>.</p>
         <p class="muted">From the first session, <code>.claude/settings.json</code> stops Claude from reading <code>.env</code> files and signing keys, force-pushing, pushing to <code>main</code> and running <code>rm -rf</code>. It asks before database resets, production deploys, store submissions and over-the-air updates.</p>
+        <p class="muted"><code>/handoff</code> saves where a long task stands: Claude pushes the work and leaves a short note on the Issue, and <code>/new-feature</code> in a fresh session continues from it.</p>
+        <p class="muted">Sessions compact at 300,000 tokens. That is a safety net: a long task should hand off before it gets there.</p>
       </section>
 
       <!-- 3 -->
@@ -441,7 +443,7 @@ claude --model opus --effort high</pre></div>
               <tr><td>Claude couldn't run the simulator</td><td>You're in a browser session or it isn't installed. Run that check on your computer or in CI.</td></tr>
               <tr><td>Works on the simulator, not on your phone</td><td>Ask Claude to reproduce it on the phone first. Release builds, slow phones and real networks behave differently.</td></tr>
               <tr><td>A store rejected the submission</td><td>Paste the rejection into a fresh Opus session; ask for the guideline cited, the smallest fix and a reply to the reviewer.</td></tr>
-              <tr><td>The session is slow or loses track</td><td><code>/compact</code> with what to keep, or start fresh.</td></tr>
+              <tr><td>The session is slow or loses track</td><td><code>/handoff</code>, then a fresh session with <code>/new-feature</code> and the Issue number. Without an Issue, <code>/compact</code> with what to keep.</td></tr>
               <tr><td>A decision doesn't make sense</td><td>"Explain this as if I'm new to it" or "Show me the ADR for this".</td></tr>
             </tbody>
           </table>

@@ -92,12 +92,31 @@ Claude Code caches the conversation so each turn doesn't pay for the whole histo
 
 ## Where the tokens go
 In one long session of this kit (65 calls to Opus 5.5, at October 2026 API prices), about 48% of the cost was new content entering the conversation, 26% was Claude's replies and thinking, and 25% was re-reading the conversation on each call. So:
-- Everything that enters the conversation (a file, a command's output, a reply) is paid for when it arrives, then again on every later call while it stays, at a twentieth of the input price on Opus 5.5 and Sonnet 5.5.
+- Everything that enters the conversation (a file, a command's output, a reply) is paid for when it arrives, then again on every later call while it stays, at the cache-read price: $0.20 per million tokens on both Opus 5.5 and Sonnet 5.5.
 - Replies and thinking cost the most per token: output costs five times as much as input.
 - In a chat, the model and the effort level matter most. In a build session with hundreds of tool calls, what enters the context and how long the session runs matter most.
 
+## Long tasks
+A session gets more expensive with every call, because each call re-reads the whole conversation. What re-reading costs per call, at the cache-read price of Opus 5.5 and Sonnet 5.5 (October 2026), before anything new enters:
+
+| Conversation size | Per call | Per 100 calls |
+|---|---|---|
+| 50,000 tokens (a fresh session after a handoff) | $0.01 | $1 |
+| 150,000 tokens | $0.03 | $3 |
+| 300,000 tokens (the kit's compaction point) | $0.06 | $6 |
+| 600,000 tokens | $0.12 | $12 |
+| 967,000 tokens (where 1M-token models compact by default) | $0.19 | $19 |
+
+Quality also drops as the context fills. So a long task runs as several short sessions, not one long one:
+1. **Split**: work bigger than about a day becomes sub-Issues. `/new-feature` proposes them in its plan step.
+2. **Hand off**: after each step that ends with checks passing, `/handoff` pushes the work and writes a note of at most 10 lines on the Issue: done, next, open problems, approaches that failed.
+3. **Clear**: `/clear` (in the browser, a new session).
+4. **Continue**: `/new-feature <issue>` again. It reads the latest handoff and picks up from "Next".
+
+`.claude/settings.json` sets `autoCompactWindow` to 300,000 tokens as a safety net, for a session that runs past the point where it should have handed off. Compaction keeps a summary and loses detail; a handoff keeps exactly what the next session needs.
+
 ## Token-saving checklist, biggest wins first
-1. One task per session. `/clear` between unrelated tasks (`/rename` first, to find it again with `/resume`).
+1. One task per session. `/clear` between unrelated tasks (`/rename` first, to find it again with `/resume`). A long task runs as several sessions joined by `/handoff` (Long tasks, above).
 2. A fresh session per phase, and per step in Phases 3, 4 and 4b: merge the step's PR, `/clear`, then `/phase <n>`. The plan lives in files (SPEC.md, docs/ROADMAP.md, ADRs), not in chat history.
 3. Sonnet by default, Opus or Fable where judgment matters, Haiku for search subagents.
 4. Default effort; raise it only when work was skipped. Never `max` by default.
@@ -110,7 +129,7 @@ In one long session of this kit (65 calls to Opus 5.5, at October 2026 API price
 11. CLI tools (`gh`, the cloud CLIs) over MCP servers. Disable servers and plugins you don't use (`/mcp`, `/plugin`); `/skill-doctor` and `/doctor` find the unused ones.
 12. A code intelligence plugin for your language (e.g. typescript-lsp) replaces grep-and-read loops with precise lookups. Phase 3, Step 5 enables it.
 13. `/btw` for side questions: the answer never enters the conversation. `/ask <question>` for questions about the kit: Haiku reads the docs in its own context and only the answer comes back. For a session of questions, `/output-style concise` gives the result first and no recaps; building keeps the default style, so the evidence at each gate stays complete.
-14. `/compact <what to keep>` when you must continue; `/clear` when you don't. The kit leaves the auto-compact window on `auto`, which Claude Code tunes for each model; Anthropic recommends it for cost and performance. A small fixed window (such as 200,000 tokens) compacts often, and each compaction is a full-context call that drops what Claude read, so it reads it again: more tokens, not fewer. Keep sessions short instead (items 1 and 2). For one session that should compact sooner, start it with `claude --autocompact 400k`; in CI or scripts, set `CLAUDE_CODE_AUTO_COMPACT_WINDOW`.
+14. `/compact <what to keep>` when you must continue; `/clear` when you don't. `.claude/settings.json` compacts at 300,000 tokens as a safety net; a session that reaches it should have handed off already (Long tasks, above). To change it for one session, start with `claude --autocompact 500k`; in CI or scripts, set `CLAUDE_CODE_AUTO_COMPACT_WINDOW`.
 15. When Claude takes a wrong turn, `/rewind` (Esc Esc) to before it and say what you want instead: a correction on top keeps the wrong attempt in the context. After two failed corrections, restart with a better prompt instead of a third correction.
 16. Agent teams can use about 7 times the tokens of a normal session. Only for truly parallel work.
 17. `/fast` buys speed with money; it doesn't save tokens.

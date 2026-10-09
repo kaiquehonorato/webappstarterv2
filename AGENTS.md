@@ -25,6 +25,7 @@ Rules for every AI agent working in this repo. Keep this file short: phase steps
 - Conventional Commits. CI must be green before merge. Backend and site deploy only through the pipeline; app builds come only from the pipeline's release profile, never from a laptop.
 - Tests first when adding behavior (red → green → refactor); appearance is checked with screenshots instead. Fix root causes; never skip, weaken or delete a failing test, and never hardcode values to make one pass.
 - Make the smallest change that does the job: no extra features, abstractions, options, permissions, SDKs or dependencies.
+- Long tasks: split work bigger than about a day into sub-Issues. When a session ends mid-task, run `/handoff` (a short note on the Issue) and continue in a fresh session; never carry one session past the compaction window.
 - If corrected twice on the same problem, stop and suggest a fresh session with a better prompt.
 - prototype/ is throwaway; production code never imports from it.
 - Two process skills in .claude/skills/, copied from Superpowers, run inside the steps of the phase prompts and kit skills, which come first: systematic-debugging before fixing any bug or failing check, verification-before-completion before saying "done".
