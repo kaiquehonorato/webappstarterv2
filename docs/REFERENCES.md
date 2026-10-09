@@ -13,6 +13,7 @@ The rules in this kit come from these sources. When in doubt, the original sourc
 - How Claude Code uses prompt caching (what a model switch costs): https://code.claude.com/docs/en/prompt-caching
 - The advisor tool: https://code.claude.com/docs/en/advisor
 - Context window and auto-compaction (`autoCompactWindow`): https://code.claude.com/docs/en/context-window
+- Auto-compact window and default thresholds: https://code.claude.com/docs/en/model-config#set-the-auto-compact-window
 - Tool output limits (what Claude sees of a long command's output): https://code.claude.com/docs/en/tools-reference#output-limits
 - Output styles (Concise): https://code.claude.com/docs/en/output-styles
 - Code intelligence plugins (`typescript-lsp` and others): https://code.claude.com/docs/en/plugins/code-intelligence
