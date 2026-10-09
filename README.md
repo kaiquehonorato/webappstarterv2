@@ -107,7 +107,7 @@ phone-web-app-starter-kit/
 
 ## Golden rules
 1. **You decide, Claude proposes.** Platforms, stack, hosting, database, store accounts, money, data and anything legal need your explicit OK. Nothing is submitted to a store or pushed to users without it.
-2. **One session = one phase, one step (Phases 3, 4 and 4b) or one Issue.** `/clear` between unrelated tasks (in the browser, a new session). A long Issue runs as several sessions joined by `/handoff`; compaction at 300,000 tokens is only the safety net.
+2. **One session = one phase, one step (Phases 3, 4 and 4b) or one Issue.** `/clear` between unrelated tasks (in the browser, a new session). A long Issue runs as several sessions joined by `/handoff`; compaction at 470,000 tokens is only the safety net.
 3. **Explore → plan → code → verify.** Skip the plan only if the change fits in one sentence.
 4. **Every claim needs evidence:** a command and its output, a test, or a screenshot from both platforms. Nothing is called "secure" without the test that shows it.
 5. **The app is public.** Anyone can download it, unpack it and call your API without it. Secrets and rules live on the server; the app only asks.

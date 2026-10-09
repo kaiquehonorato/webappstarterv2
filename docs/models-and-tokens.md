@@ -103,7 +103,7 @@ A session gets more expensive with every call, because each call re-reads the wh
 |---|---|---|
 | 50,000 tokens (a fresh session after a handoff) | $0.01 | $1 |
 | 150,000 tokens | $0.03 | $3 |
-| 300,000 tokens (the kit's compaction point) | $0.06 | $6 |
+| 470,000 tokens (the kit's compaction point) | $0.09 | $9 |
 | 600,000 tokens | $0.12 | $12 |
 | 967,000 tokens (where 1M-token models compact by default) | $0.19 | $19 |
 
@@ -113,7 +113,7 @@ Quality also drops as the context fills. So a long task runs as several short se
 3. **Clear**: `/clear` (in the browser, a new session).
 4. **Continue**: `/new-feature <issue>` again. It reads the latest handoff and picks up from "Next".
 
-`.claude/settings.json` sets `autoCompactWindow` to 300,000 tokens as a safety net, for a session that runs past the point where it should have handed off. Compaction keeps a summary and loses detail; a handoff keeps exactly what the next session needs.
+`.claude/settings.json` sets `autoCompactWindow` to 470,000 tokens as a safety net, for a session that runs past the point where it should have handed off. Compaction keeps a summary and loses detail; a handoff keeps exactly what the next session needs.
 
 ## Token-saving checklist, biggest wins first
 1. One task per session. `/clear` between unrelated tasks (`/rename` first, to find it again with `/resume`). A long task runs as several sessions joined by `/handoff` (Long tasks, above).
@@ -129,7 +129,7 @@ Quality also drops as the context fills. So a long task runs as several short se
 11. CLI tools (`gh`, the cloud CLIs) over MCP servers. Disable servers and plugins you don't use (`/mcp`, `/plugin`); `/skill-doctor` and `/doctor` find the unused ones.
 12. A code intelligence plugin for your language (e.g. typescript-lsp) replaces grep-and-read loops with precise lookups. Phase 3, Step 5 enables it.
 13. `/btw` for side questions: the answer never enters the conversation. `/ask <question>` for questions about the kit: Haiku reads the docs in its own context and only the answer comes back. For a session of questions, `/output-style concise` gives the result first and no recaps; building keeps the default style, so the evidence at each gate stays complete.
-14. `/compact <what to keep>` when you must continue; `/clear` when you don't. `.claude/settings.json` compacts at 300,000 tokens as a safety net; a session that reaches it should have handed off already (Long tasks, above). To change it for one session, start with `claude --autocompact 500k`; in CI or scripts, set `CLAUDE_CODE_AUTO_COMPACT_WINDOW`.
+14. `/compact <what to keep>` when you must continue; `/clear` when you don't. `.claude/settings.json` compacts at 470,000 tokens as a safety net; a session that reaches it should have handed off already (Long tasks, above). To change it for one session, start with `claude --autocompact 300k`; in CI or scripts, set `CLAUDE_CODE_AUTO_COMPACT_WINDOW`.
 15. When Claude takes a wrong turn, `/rewind` (Esc Esc) to before it and say what you want instead: a correction on top keeps the wrong attempt in the context. After two failed corrections, restart with a better prompt instead of a third correction.
 16. Agent teams can use about 7 times the tokens of a normal session. Only for truly parallel work.
 17. `/fast` buys speed with money; it doesn't save tokens.
