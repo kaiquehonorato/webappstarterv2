@@ -292,7 +292,7 @@ cd webappstarterv2</pre></div>
         <p data-path="browser" hidden>If the Claude GitHub App only has access to selected repositories, add any new one: GitHub → <strong>Settings → Applications → Installed GitHub Apps → Claude → Configure → Repository access</strong>.</p>
         <p class="muted">From the first session, <code>.claude/settings.json</code> stops Claude from reading <code>.env</code> files and signing keys, force-pushing, pushing to <code>main</code> and running <code>rm -rf</code>. It asks before database resets, production deploys, store submissions and over-the-air updates.</p>
         <p class="muted"><code>/handoff</code> saves where a long task stands: Claude pushes the work and leaves a short note on the Issue, and <code>/new-feature</code> in a fresh session continues from it.</p>
-        <p class="muted">Sessions compact at 300,000 tokens. That is a safety net: a long task should hand off before it gets there.</p>
+        <p class="muted">Sessions compact at 470,000 tokens. That is a safety net: a long task should hand off before it gets there.</p>
       </section>
 
       <!-- 3 -->
