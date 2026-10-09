@@ -32,6 +32,7 @@ They live in `.claude/skills/`, so they load in the terminal, the desktop app an
 | `use-case-manual` | `/use-case-manual`: regenerates the illustrated manual from the prototype or the app on iOS and Android | This kit |
 | `phase` | `/phase <n>`: starts a phase from its prompt, or the next step of Phases 3, 4 and 4b from the handoff in docs/ROADMAP.md | This kit |
 | `ask` | `/ask <question>`: answers from the kit's files on Haiku, in its own context, so only the answer enters the conversation | This kit |
+| `handoff` | `/handoff`: pushes the work and writes a short note on the Issue (done, next, open problems), so a long task continues in a fresh session | This kit |
 
 **Why Cloudflare's audit skill is a copy too.** Its own instructions install it with `npx skills add`, which fetches and runs the newest Skills CLI each time, the reason this kit skips the Playwright and Chrome plugins as well. A copy is pinned to a commit you read, and it works in browser sessions. It is not in the Anthropic Directory, so there is no publisher tier to read: what stands behind it is the `cloudflare` GitHub organization, an MIT license in Cloudflare's name, and the blog post describing the harness it grew into. What it contains: 15 instruction files, a JSON schema, and two validators whose only imports are `node:fs`, `node:path` and `node:util`. They read one JSON file, print errors and exit. No network, no child process, no hooks, no MCP server and no install step, which is `contained` reach in the directory's vocabulary. It refuses to run your code at all unless an operating-system sandbox with no network and hard limits is available, and records the missing control instead.
 
@@ -121,7 +122,7 @@ Skip these, with the reason:
 | `docs`, `doc-coauthoring` | Phase 0 writes SPEC.md into the repo, where the code and the tests can point at it |
 
 ## What this kit adds
-- Skills in .claude/skills/: the four copies above, plus `/new-feature <issue>`, `/store-release <version>`, `/use-case-manual`, `/phase <n>` and `/ask <question>`.
+- Skills in .claude/skills/: the four copies above, plus `/new-feature <issue>`, `/store-release <version>`, `/use-case-manual`, `/phase <n>`, `/ask <question>` and `/handoff`.
 - Subagents in .claude/agents/: explorer, test-writer, ui-reviewer, security-reviewer, verifier.
 - Rules in .claude/rules/: mobile (the app), backend (the API) and web (the store pages), loaded only when Claude reads matching files.
 - Pull request and Issue templates in .github/, with a definition of done.

@@ -10,6 +10,8 @@ Without the slash command (another tool, or to adapt the steps once), paste this
 Follow .claude/skills/new-feature/SKILL.md for GitHub Issue #<N>.
 ```
 
+A long Issue: Claude proposes sub-Issues when the work is bigger than about a day. Within one Issue, after each step that ends with checks passing, Claude runs `/handoff`: it pushes the work and writes a short note on the Issue. Type `/clear` (in the browser, start a new session), then `/new-feature <issue-number>` again; it reads the latest handoff and continues from there.
+
 When it gets hard:
 - One hard step: add the word `ultrathink` to that message for deeper reasoning on that turn only.
 - A bug that survived two attempts, or money, permission, offline sync or concurrency logic: start the session on Opus at high or xhigh effort (docs/models-and-tokens.md), or keep Sonnet and turn on the advisor with `/advisor opus`.
